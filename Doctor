@@ -1,0 +1,23 @@
+CREATE CONSTRAINT ON (d:Doctor)  ASSERT d.tpn_npi is unique;
+CREATE CONSTRAINT ON (l:LBN1)  ASSERT l.hospital_name is unique;
+CREATE CONSTRAINT ON (l:LBN2)  ASSERT l.hospital_name is unique;
+CREATE CONSTRAINT ON (l:LBN3)  ASSERT l.hospital_name is unique;
+CREATE CONSTRAINT ON (l:LBN4)  ASSERT l.hospital_name is unique;
+CREATE CONSTRAINT ON (l:LBN5)  ASSERT l.hospital_name is unique;
+
+USING PERIODIC COMMIT
+LOAD CSV WITH HEADERS FROM "file:///npi_hoispital_affiliation_neo4j.csv" AS row 
+
+CREATE (d:Doctor {tpn_npi:TOINTEGER(row.tpn_npi),`Last Name`:UPPER(row.`Last Name`),`First Name`:UPPER(row.`First Name`),`Secondary specialty 1`:UPPER(row.`Secondary specialty 1 `),`Primary specialty`:UPPER(row.`Primary specialty`)})
+MERGE (lbn1:LBN1 {hospital_name:UPPER(row.`Hospital affiliation LBN 1`)})
+MERGE (lbn2:LBN2 {hospital_name:UPPER(row.`Hospital affiliation LBN 2`)})
+MERGE (lbn3:LBN3 {hospital_name:UPPER(row.`Hospital affiliation LBN 3`)})
+MERGE (lbn4:LBN4 {hospital_name:UPPER(row.`Hospital affiliation LBN 4`)})
+MERGE (lbn5:LBN5 {hospital_name:UPPER(row.`Hospital affiliation LBN 5`)})
+
+CREATE (d)-[:affiliated]->(lbn1)
+CREATE (d)-[:affiliated]->(lbn2)
+CREATE (d)-[:affiliated]->(lbn3)
+CREATE (d)-[:affiliated]->(lbn4)
+CREATE (d)-[:affiliated]->(lbn5)
+
